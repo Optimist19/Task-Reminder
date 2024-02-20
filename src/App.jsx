@@ -1,10 +1,14 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 import { CiCircleRemove } from "react-icons/ci";
 
+import NotificationSound from "./notification/mixkit-weird-alarm-loop-2977.wav";
+
+
 function App() {
   const [todoArr, setTodoArr] = useState([]);
-  const [realtime, setRealtime] = useState("");
+  const [currentTime, setCurrentTime] = useState("");
+  const audioPlayer = useRef(null);
 
   const [input, setInput] = useState({
     title: "",
@@ -12,20 +16,27 @@ function App() {
     timeAndDate: ""
   });
 
+
   const getItem = JSON.parse(localStorage.getItem("todoArr")) || [];
   useEffect(() => {
     setTodoArr(getItem);
-    const interval = setInterval(() => {
-      const a = new Date();
-      const b = a.toLocaleTimeString("en-US", { hour12: false });
-      setRealtime(b);
-    }, 1000);
+    // const interval = setInterval(() => {
+      // const getCurrentime = new Date().toLocaleTimeString("en-US", { hour12: false });
+      // setCurrentTime(getCurrentime);
+    // }, 1000);
 
-    return () => {
-      clearInterval(interval);
-    };
+    // return () => {
+    //   clearInterval(interval);
+    // };
   }, [input]);
-  // console.log(realtime);
+  // console.log(currentTime);
+
+  function playAudio(play) {
+    console.log(play);
+    if (play === "play") {
+      audioPlayer.current.play();
+    }
+  }
 
   function handleChange(e) {
     setInput({ ...input, [e.target.name]: e.target.value });
@@ -33,6 +44,7 @@ function App() {
 
   function submit(e) {
     e.preventDefault();
+
     setTodoArr([...todoArr, input]);
     localStorage.setItem("todoArr", JSON.stringify([...todoArr, input]));
     setInput((prev) => {
@@ -47,7 +59,7 @@ function App() {
 
   const x = getItem.map((todolist, i) => {
     return (
-      <div key={i + 1}>
+      <div key={i}>
         <h1>{todolist.title}</h1>
         <p>{todolist.desc}</p>
         <h1>{todolist.timeAndDate}</h1>
@@ -56,21 +68,34 @@ function App() {
     );
   });
 
-  // const b = todoArr
 
   function alarm() {
     todoArr.find((item) => {
-      if (item.timeAndDate === realtime) {
-        alert("hi");
+      if (item.timeAndDate === currentTime) {
+        playAudio("play");
       }
+
     });
+
+    const updatedArr = getItem.filter((item) => item.timeAndDate !== currentTime);
+    localStorage.setItem("todoArr", JSON.stringify(updatedArr));
   }
 
   alarm();
 
+  function stopAlarm() {
+    const millisecondsToAdd = 1 * 60 * 2000; // 20secs
+
+    if (input.timeAndDate + millisecondsToAdd === currentTime) {
+      location.reload();
+    }
+  }
+
+  stopAlarm();
+
   return (
     <div>
-      <div>{realtime}</div>
+      <div>{currentTime}</div>
       <form onSubmit={submit}>
         <label>Title</label>
         <input
@@ -99,6 +124,7 @@ function App() {
       </form>
       {getItem.length < 1 && <p>It is empty</p>}
       {x}
+      <audio ref={audioPlayer} src={NotificationSound} />
     </div>
   );
 }
