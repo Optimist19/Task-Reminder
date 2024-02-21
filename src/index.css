@@ -178,6 +178,7 @@
 .second-view-con button{
   /* width: 20%; */
   padding: 0.5% 0.5%;
+  cursor: pointer;
 }
 
 .second-view-con .empty{
@@ -201,7 +202,37 @@ margin: 3vh auto;
 text-align: center;
 }
 
+@media screen and (max-width: 651px){
+  .second-view-con .tasks-list{
+    display: flex;
+    flex-direction: column;
+    background-color: black;
+  }
+}
 
+
+@media screen and (max-width: 520px){
+  .con .first-view .h1-clock h1{
+    font-size: 36px;
+  }
+
+  .con .first-view .h1-clock p{
+    font-size: 25px;
+  }
+
+  .second-view-con h1{
+    font-size: 30px;
+  }
+
+  .second-view-con input{
+    font-size: 14px;
+  }
+
+  .second-view-con .empty{
+    font-size: 20px;
+
+  }
+}
 
 
 
